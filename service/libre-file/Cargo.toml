@@ -1,9 +1,10 @@
 [package]
-name = "libre-file"
+name = "fileservice"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+libre-core = { path = "../libre-core" }
 actix-rt = "2.10.0"
 actix-web = "4.0" # Actix web is a simple, pragmatic and extremely fast web framework for Rust.
 actix-multipart = "0.7.2"
@@ -23,3 +24,6 @@ serde_json = "1.0" # A JSON serialization file format.
 epub = "2.1.2"
 reqwest = { version = "0.11", features = ["json"] }
 chrono = { version = "0.4", features = ["serde"] }
+actix-web-httpauth = "0.6"
+tokio = "1.42.0"
+uuid = { version = "1.0", features = ["v4"] }
