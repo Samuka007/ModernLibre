@@ -1,0 +1,12 @@
+[workspace]
+
+members = [
+    "libre-user",
+    "libre-file",
+    "libre-book",
+    "libre-core"
+]
+
+[workspace.dependencies]
+diesel = { version = "2.1.0", features = ["uuid", "chrono"] }
+diesel-async = { version = "0.3.1", features = ["postgres", "bb8"] }

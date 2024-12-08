@@ -1,0 +1,14 @@
+{
+	"name": "Node.js & TypeScript",
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
+	// 将主机的 SSH 目录挂载到容器中
+	"mounts": [
+		"source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached"
+	],
+	"postCreateCommand": "npm install && npx next dev",
+	"forwardPorts": [
+		3000
+	],
+	// 确保 SSH 权限正确
+	"remoteUser": "node"
+}

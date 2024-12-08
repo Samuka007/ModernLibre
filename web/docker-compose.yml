@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  libre-front:
+    image: ghcr.io/samuka007/libre-front:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NEXT_PUBLIC_LIBRE_BACKEND_URL=http://172.24.4.42:4010
+      - NEXT_PUBLIC_CASDOOR_SERVER_URL=http://172.24.4.42/
+      - NEXT_PUBLIC_CASDOOR_CLIENT_ID=636d3b65c0c7ce76e32d
+      - NEXT_PUBLIC_CASDOOR_ORG_NAME=modern-libre-dev-group
+      - NEXT_PUBLIC_CASDOOR_APP_NAME=modern_libre
+    ports:
+      - "3000:3000"
