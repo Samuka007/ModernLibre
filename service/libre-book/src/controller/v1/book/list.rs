@@ -1,4 +1,4 @@
-use crate::schema;
+use crate::{schema, models};
 use actix_web::{web, HttpResponse};
 use serde::Deserialize;
 
@@ -25,27 +25,27 @@ pub async fn list(
             let by = by.unwrap_or("id".to_string());
             match by.as_str() {
                 "id" => {
-                    schema::book::dsl::book
-                        .select(schema::Book::as_select())
-                        .order(schema::book::id.desc())
+                    schema::books::dsl::books
+                        .select(models::Book::as_select())
+                        .order(schema::books::id.desc())
                         .limit(limit)
-                        .load::<schema::Book>(&mut conn)
+                        .load::<models::Book>(&mut conn)
                         .await
                 }
                 "recent" => {
-                    schema::book::dsl::book
-                        .select(schema::Book::as_select())
-                        .order(schema::book::added_date.desc())
+                    schema::books::dsl::books
+                        .select(models::Book::as_select())
+                        .order(schema::books::added_date.desc())
                         .limit(limit)
-                        .load::<schema::Book>(&mut conn)
+                        .load::<models::Book>(&mut conn)
                         .await
                 }
                 "top-rated" => {
-                    schema::book::dsl::book
-                        .select(schema::Book::as_select())
-                        .order(schema::book::rating.desc())
+                    schema::books::dsl::books
+                        .select(models::Book::as_select())
+                        .order(schema::books::rating.desc())
                         .limit(limit)
-                        .load::<schema::Book>(&mut conn)
+                        .load::<models::Book>(&mut conn)
                         .await
                 }
                 _ => return Err(actix_web::error::ErrorBadRequest("Invalid query parameter")),

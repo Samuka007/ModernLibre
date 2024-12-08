@@ -8,7 +8,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
         .configure(database::postgres::init)
         .configure(database::redis::init)
-        .configure(jsonwebtoken::init)
+        .configure(jsonwebtoken::init_encoder)
         .configure(oauth::init)
         .configure(controller::init_routes)
     )

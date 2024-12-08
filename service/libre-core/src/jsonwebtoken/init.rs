@@ -3,31 +3,34 @@ use jsonwebtoken::{DecodingKey, EncodingKey};
 
 use crate::environment::{JWT_ALGORITHM, JWT_PRIVATE_KEY_PATH, JWT_PUBLIC_KEY_PATH};
 
-use super::JwtUtil;
+use super::{TokenEncoder, TokenDecoder};
 
-pub fn init(cfg: &mut web::ServiceConfig) {
-    let jwt_util = env_jwt_util();
-    cfg.app_data(web::Data::new(jwt_util)); // todo...
+pub fn init_encoder(cfg: &mut web::ServiceConfig) {
+    let encoder = encoder();
+    cfg.app_data(web::Data::new(encoder)); // todo...
 }
 
-fn env_jwt_util() -> JwtUtil {
+pub fn init_decoder(cfg: &mut web::ServiceConfig) {
+    let decoder = decoder();
+    cfg.app_data(web::Data::new(decoder)); // todo...
+}
+
+pub fn encoder() -> TokenEncoder {
     let algorithm = env_jwt_algorithm();
-    let pubkey_path =
-        std::env::var(JWT_PUBLIC_KEY_PATH).expect(&format!("{JWT_PUBLIC_KEY_PATH} must be set"));
-    let privkey_path =
-        std::env::var(JWT_PRIVATE_KEY_PATH).expect(&format!("{JWT_PRIVATE_KEY_PATH} must be set"));
-
-    let pub_file = std::fs::read(pubkey_path).expect("Failed to read public key file");
+    let privkey_path = std::env::var(JWT_PRIVATE_KEY_PATH).expect(&format!("{JWT_PRIVATE_KEY_PATH} must be set"));
     let priv_file = std::fs::read(privkey_path).expect("Failed to read private key file");
-
-    let public_key = DecodingKey::from_rsa_pem(&pub_file).expect("Failed to parse public key file");
     let private_key = EncodingKey::from_rsa_pem(&priv_file).expect("Failed to parse private key file");
 
-    JwtUtil {
-        public_key,
-        private_key,
-        algorithm,
-    }
+    TokenEncoder { private_key, algorithm }
+}
+
+pub fn decoder() -> TokenDecoder {
+    let algorithm = env_jwt_algorithm();
+    let pubkey_path = std::env::var(JWT_PUBLIC_KEY_PATH).expect(&format!("{JWT_PUBLIC_KEY_PATH} must be set"));
+    let pub_file = std::fs::read(pubkey_path).expect("Failed to read public key file");
+    let public_key = DecodingKey::from_rsa_pem(&pub_file).expect("Failed to parse public key file");
+
+    TokenDecoder { public_key, algorithm }
 }
 
 fn env_jwt_algorithm() -> jsonwebtoken::Algorithm {

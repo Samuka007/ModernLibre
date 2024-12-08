@@ -3,7 +3,6 @@ resolver = "2"
 
 members = [
     "libre-user",
-    "libre-file",
     "libre-book",
     "libre-core"
 ]

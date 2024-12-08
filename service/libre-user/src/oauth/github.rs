@@ -156,7 +156,7 @@ struct LoginResponse {
 async fn callback(
     query: web::Query<super::CallbackQuery>,
     github: web::Data<GitHubClient>,
-    jwt: web::Data<jsonwebtoken::JwtUtil>,
+    jwt: web::Data<jsonwebtoken::TokenEncoder>,
     redis_pool: web::Data<RedisMultiplexClient>,
     postgres_pool: web::Data<PostgresPool>,
 ) -> Result<HttpResponse, actix_web::Error> {

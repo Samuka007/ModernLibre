@@ -1,4 +1,5 @@
 use actix_multipart::form::{tempfile::TempFile, MultipartForm};
+use std::path::Path;
 
 // 临时文件流
 #[derive(Debug, MultipartForm)]
@@ -14,6 +15,13 @@ pub enum FileType {
 }
 
 impl FileType {
+    pub fn from_filename(filename: &str) -> Self {
+        Path::new(filename)
+            .extension()
+            .and_then(|os_str| os_str.to_str())
+            .map_or(Self::Unknown, FileType::from_str)
+    }
+
     #[allow(unused)]
     pub fn from_str(ftype: &str) -> Self {
         match ftype.to_lowercase().as_str() {

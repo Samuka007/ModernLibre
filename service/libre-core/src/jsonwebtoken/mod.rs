@@ -9,14 +9,33 @@ use serde::{Deserialize, Serialize};
 use actix_web::{dev::ServiceRequest, HttpMessage as _};
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 
-mod init;
+pub mod init;
 
-pub use init::init;
+pub use init::{init_encoder, init_decoder};
 
-pub struct JwtUtil {
-    pub public_key: DecodingKey,
+pub struct TokenEncoder {
     pub private_key: EncodingKey,
     pub algorithm: Algorithm,
+}
+
+impl TokenEncoder {
+    pub fn generate_jwt(&self, claims: &Claims) -> Result<String, jsonwebtoken::errors::Error> {
+        encode(&Header::new(self.algorithm), claims, &self.private_key)
+    }
+}
+
+pub struct TokenDecoder {
+    pub public_key: DecodingKey,
+    pub algorithm: Algorithm,
+}
+
+impl TokenDecoder {
+    pub fn validate(
+        &self,
+        token: &str,
+    ) -> Result<TokenData<Claims>, jsonwebtoken::errors::Error> {
+        decode::<Claims>(token, &self.public_key, &Validation::new(self.algorithm))
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -48,15 +67,7 @@ impl Claims {
         self
     }
 
-    // pub fn user(mut self, user: &User) -> Self {
-    //     self.sub = user.uid.to_string();
-    //     self.jti = user.uid.to_string();
-    //     self.name = user.name.clone();
-    //     self.admin = user.admin;
-    //     self
-    // }
-
-    pub fn generate_jwt(&self, jwt_util: &JwtUtil) -> Result<String, jsonwebtoken::errors::Error> {
+    pub fn generate_jwt(&self, jwt_util: &TokenEncoder) -> Result<String, jsonwebtoken::errors::Error> {
         jwt_util.generate_jwt(self)
     }
 }
@@ -68,19 +79,6 @@ pub fn generate_key_pair(bits: usize) -> (RsaPrivateKey, RsaPublicKey) {
     (private_key, public_key)
 }
 
-impl JwtUtil {
-    pub fn validate_jwt(
-        &self,
-        token: &str,
-    ) -> Result<TokenData<Claims>, jsonwebtoken::errors::Error> {
-        decode::<Claims>(token, &self.public_key, &Validation::new(self.algorithm))
-    }
-
-    pub fn generate_jwt(&self, claims: &Claims) -> Result<String, jsonwebtoken::errors::Error> {
-        encode(&Header::new(self.algorithm), claims, &self.private_key)
-    }
-}
-
 /// 认证中间件
 /// wrap in scope needs validation
 pub async fn validator(
@@ -88,9 +86,9 @@ pub async fn validator(
     credentials: BearerAuth,
 ) -> Result<ServiceRequest, actix_web::error::Error> {
     let jwt = req
-        .app_data::<JwtUtil>()
+        .app_data::<TokenDecoder>()
         .expect("JwtUtil is not configured");
-    match jwt.validate_jwt(credentials.token()) {
+    match jwt.validate(credentials.token()) {
         Ok(user) => {
             req.extensions_mut().insert(user.claims);
             Ok(req)
@@ -104,9 +102,9 @@ pub async fn validator_no_data(
     credentials: BearerAuth,
 ) -> Result<ServiceRequest, actix_web::error::Error> {
     let jwt = req
-        .app_data::<JwtUtil>()
+        .app_data::<TokenDecoder>()
         .expect("JwtUtil is not configured");
-    jwt.validate_jwt(credentials.token())
+    jwt.validate(credentials.token())
     .map_err(|e| actix_web::error::ErrorUnauthorized(e.to_string()))?;
     Ok(req)
 }

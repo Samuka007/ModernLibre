@@ -32,7 +32,6 @@ pub async fn get_presigned_download_url(
 /// you can get the request by calling [`into_http_1x_request()`] on the returned [`PresignedRequest`]
 /// 
 /// [`into_http_1x_request()`]: https://docs.rs/aws-sdk-s3/latest/aws_sdk_s3/presigning/struct.PresignedRequest.html#method.into_http_1x_request
-#[allow(dead_code)]
 pub async fn get_presigned_upload_url(
     client: &aws_sdk_s3::Client,
     object: &str, 
@@ -61,7 +60,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_get_presigned_download_url() {
-        let client = crate::controller::s3::s3_client().await;
+        let client = crate::s3::s3_client().await;
         let object = "test.txt";
         let bucket = "test-bucket";
         let expire_in = std::time::Duration::from_secs(60);
@@ -77,7 +76,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_get_presigned_upload_url() {
-        let client  = crate::controller::s3::s3_client().await;
+        let client  = crate::s3::s3_client().await;
         let object = "test.txt";
         let bucket = "test-bucket";
         let expire_in = std::time::Duration::from_secs(60);

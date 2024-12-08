@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 use aws_sdk_s3::operation::{get_object::{GetObjectError, GetObjectOutput}, put_object::{PutObjectError, PutObjectOutput}};
 
 pub async fn upload(client: &aws_sdk_s3::Client, object: &str, bucket: &str, body: aws_sdk_s3::primitives::ByteStream) -> Result<PutObjectOutput, PutObjectError> {
