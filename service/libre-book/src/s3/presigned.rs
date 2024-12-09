@@ -58,9 +58,9 @@ pub async fn get_presigned_upload_url(
 mod tests {
     use super::*;
 
-    #[actix_rt::test]
+    #[actix_web::test]
     async fn test_get_presigned_download_url() {
-        let client = crate::s3::s3_client().await;
+        let client = crate::s3::s3_client();
         let object = "test.txt";
         let bucket = "test-bucket";
         let expire_in = std::time::Duration::from_secs(60);
@@ -74,9 +74,9 @@ mod tests {
         // assert!(uri.contains(bucket));
     }
 
-    #[actix_rt::test]
+    #[actix_web::test]
     async fn test_get_presigned_upload_url() {
-        let client  = crate::s3::s3_client().await;
+        let client  = crate::s3::s3_client();
         let object = "test.txt";
         let bucket = "test-bucket";
         let expire_in = std::time::Duration::from_secs(60);
