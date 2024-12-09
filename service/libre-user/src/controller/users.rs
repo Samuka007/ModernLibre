@@ -13,6 +13,7 @@ use libre_core::database::postgres::PostgresPool;
 use libre_core::jsonwebtoken;
 
 use crate::models;
+use crate::schema;
 
 #[get("")]
 async fn get_users(
@@ -33,7 +34,7 @@ async fn get_users(
 
     let mut conn = pool.get().await?;
 
-    let users = models::user::dsl::user
+    let users = schema::user::dsl::user
         .load::<models::User>(&mut conn)
         .await
         .map_err(actix_web::error::ErrorInternalServerError)?;
@@ -71,8 +72,8 @@ async fn get_user_with_login(
 
     let mut conn = pool.get().await?;
 
-    let query_result: Result<models::User, diesel::result::Error> = models::user::dsl::user
-        .filter(models::user::dsl::login.eq(&param.login))
+    let query_result: Result<models::User, diesel::result::Error> = schema::user::dsl::user
+        .filter(schema::user::dsl::login.eq(&param.login))
         .select(models::User::as_select())
         .first(&mut conn)
         .await;
@@ -124,17 +125,17 @@ async fn update_user(
 
     if let Some(username) = &update.username {
         diesel::update(
-            models::user::dsl::user.filter(models::user::dsl::login.eq(param_login)),
+            schema::user::dsl::user.filter(schema::user::dsl::login.eq(param_login)),
         )
-        .set(models::user::dsl::name.eq(username))
+        .set(schema::user::dsl::name.eq(username))
         .execute(&mut conn)
         .await
         .map_err(actix_web::error::ErrorInternalServerError)?;
     }
 
     if let Some(login) = &update.login {
-        let existing_user: Result<models::User, diesel::result::Error> = models::user::dsl::user
-            .filter(models::user::dsl::login.eq(login))
+        let existing_user: Result<models::User, diesel::result::Error> = schema::user::dsl::user
+            .filter(schema::user::dsl::login.eq(login))
             .first(&mut conn)
             .await;
 
@@ -143,9 +144,9 @@ async fn update_user(
         }
 
         diesel::update(
-            models::user::dsl::user.filter(models::user::dsl::login.eq(param_login)),
+            schema::user::dsl::user.filter(schema::user::dsl::login.eq(param_login)),
         )
-        .set(models::user::dsl::login.eq(&login))
+        .set(schema::user::dsl::login.eq(&login))
         .execute(&mut conn)
         .await
         .map_err(actix_web::error::ErrorInternalServerError)?;
@@ -153,9 +154,9 @@ async fn update_user(
 
     if let Some(email) = &update.email {
         diesel::update(
-            models::user::dsl::user.filter(models::user::dsl::login.eq(param_login)),
+            schema::user::dsl::user.filter(schema::user::dsl::login.eq(param_login)),
         )
-        .set(models::user::dsl::email.eq(email))
+        .set(schema::user::dsl::email.eq(email))
         .execute(&mut conn)
         .await
         .map_err(actix_web::error::ErrorInternalServerError)?;
@@ -163,9 +164,9 @@ async fn update_user(
 
     if let Some(admin) = update.admin {
         diesel::update(
-            models::user::dsl::user.filter(models::user::dsl::login.eq(param_login)),
+            schema::user::dsl::user.filter(schema::user::dsl::login.eq(param_login)),
         )
-        .set(models::user::dsl::admin.eq(admin))
+        .set(schema::user::dsl::admin.eq(admin))
         .execute(&mut conn)
         .await
         .map_err(actix_web::error::ErrorInternalServerError)?;

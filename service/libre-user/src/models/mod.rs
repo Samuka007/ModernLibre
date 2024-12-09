@@ -5,8 +5,7 @@ use diesel_async::pooled_connection::bb8::PooledConnection;
 use diesel_async::{AsyncPgConnection, RunQueryDsl};
 use serde::{Deserialize, Serialize};
 
-mod schema;
-pub use schema::user;
+use crate::schema::user;
 
 #[derive(Default, Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone)]
 #[diesel(table_name = user)]
