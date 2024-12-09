@@ -1,4 +1,5 @@
-use actix_multipart::form::MultipartForm;
+use actix_multipart::form::{tempfile::TempFile, MultipartForm};
+
 use actix_web::{web, HttpResponse};
 use aws_sdk_s3::Client as S3Client;
 use std::io::Read;
@@ -6,7 +7,11 @@ use file_format::FileFormat;
 
 use crate::{s3, extractor};
 
-use super::file::UploadForm;
+// 临时文件流
+#[derive(Debug, MultipartForm)]
+pub struct UploadForm {
+    pub file: TempFile,
+}
 
 pub async fn upload(
     mut payload: MultipartForm<UploadForm>,
@@ -25,6 +30,9 @@ pub async fn upload(
         FileFormat::ElectronicPublication => {
             extractor::epub::get_metadata(buffer)
             .ok_or(ErrorBadRequest("Invalid epub file"))?
+        }
+        FileFormat::PlainText => {
+            todo!("txt")
         }
         _ => {
             return Err(ErrorBadRequest("Unknown file format"));

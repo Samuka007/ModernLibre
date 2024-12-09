@@ -8,7 +8,6 @@ use libre_core::database::postgres::PostgresPool;
 use libre_core::jsonwebtoken::{init, validator_no_data};
 
 mod list;
-mod file;
 mod upload;
 mod download;
 
