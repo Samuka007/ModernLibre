@@ -9,5 +9,6 @@ diesel::table! {
         description -> Nullable<Text>,
         rating -> Nullable<Float8>,
         added_date -> Date,
+        extension -> Varchar,
     }
 }

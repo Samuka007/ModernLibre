@@ -31,7 +31,7 @@ pub async fn upload(
         FileFormat::PortableDocumentFormat => {
             extractor::pdf::get_metadata(buffer, payload.file.file_name.as_ref())
                 .ok_or(ErrorBadRequest("Invalid pdf file"))?
-        },
+        }
         FileFormat::ElectronicPublication => {
             extractor::epub::get_metadata(buffer).ok_or(ErrorBadRequest("Invalid epub file"))?
         }
@@ -53,9 +53,13 @@ pub async fn upload(
         .await
         .map_err(|_| ErrorInternalServerError("Failed to insert book"))?;
 
-    storage.upload_book(id, file_format, body).await
+    storage
+        .upload_book(id, file_format, body)
+        .await
         .map_err(|err| ErrorInternalServerError(err.to_string()))?;
-    storage.upload_cover(id, cover).await
+    storage
+        .upload_cover(id, cover)
+        .await
         .map_err(|err| ErrorInternalServerError(err.to_string()))?;
 
     Ok(HttpResponse::Created().finish())

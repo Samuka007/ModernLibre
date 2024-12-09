@@ -1,4 +1,4 @@
-use crate::{schema, models, s3};
+use crate::{models, s3, schema};
 use actix_web::{web, HttpResponse};
 
 use diesel::prelude::*;
@@ -7,27 +7,25 @@ use diesel_async::RunQueryDsl;
 use libre_core::database::postgres::PostgresPool;
 use libre_core::jsonwebtoken::{init, validator_no_data};
 
+mod download;
 mod list;
 mod upload;
-mod download;
 
 #[inline]
 pub fn service_config(cfg: &mut web::ServiceConfig) {
-    let middleware =
-        actix_web_httpauth::middleware::HttpAuthentication::bearer(validator_no_data);
+    let middleware = actix_web_httpauth::middleware::HttpAuthentication::bearer(validator_no_data);
 
     cfg.service(
         web::scope("/books")
             .route("/details/{book_id}", web::get().to(get_book_details))
-            .route("/list", web::get().to(list::list))
-            // .service(
-            //     web::resource("/upload")
-            //         .app_data(init::decoder())
-            //         .app_data(s3::s3_client())
-            //         .wrap(middleware)
-            //         .route(web::post().to(upload)),
-            // )
-            // 
+            .route("/list", web::get().to(list::list)), // .service(
+                                                        //     web::resource("/upload")
+                                                        //         .app_data(init::decoder())
+                                                        //         .app_data(s3::s3_client())
+                                                        //         .wrap(middleware)
+                                                        //         .route(web::post().to(upload)),
+                                                        // )
+                                                        //
     );
 }
 
