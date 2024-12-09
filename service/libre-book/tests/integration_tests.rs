@@ -17,7 +17,7 @@ mod tests {
             std::env::set_var("RUST_LOG", "debug");
             env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
         });
-        
+
         init_postgres_pool()
     }
 
