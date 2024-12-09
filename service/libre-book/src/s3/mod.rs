@@ -53,6 +53,7 @@ impl StorageClient {
         cover: DynamicImage,
     ) -> Result<put_object::PutObjectOutput, put_object::PutObjectError> {
         let mut cursor = std::io::Cursor::new(Vec::new());
+        // TODO: adjust the image size
         let _ = cover.write_to(&mut cursor, image::ImageFormat::Png);
 
         let key = format!("{}.png", id);
@@ -94,6 +95,7 @@ impl StorageClient {
     ) -> Result<String, get_object::GetObjectError> {
         let key = format!("{}/{}.{}", id, id, file_format.extension());
         let expire_in = std::time::Duration::from_mins(60);
+        // TODO: add expire_in to env
 
         get_presigned_download_url(
             &self.client,
