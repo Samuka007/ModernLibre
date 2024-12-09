@@ -1,14 +1,14 @@
 use image::DynamicImage;
 use pdf2image::{RenderOptionsBuilder, PDF as PDF2Image};
 
-use crate::models::{NewBook, NewBookBuilder};
+use crate::{models::{NewBook, NewBookBuilder}, schema::books::extension};
 
 pub fn get_metadata(pdf_buffer: Vec<u8>, filename: Option<&String>) -> Option<(NewBook, DynamicImage)> {
     let title = std::path::Path::new(filename?)
         .file_stem()?
         .to_str()?
         .to_string();
-    let book = NewBookBuilder::default().title(title).build().unwrap();
+    let book = NewBookBuilder::default().title(title).extension("pdf".to_owned()).build().unwrap();
     let cover = get_cover(pdf_buffer).unwrap();
     
     Some((book, cover))

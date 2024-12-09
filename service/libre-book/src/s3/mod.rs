@@ -91,10 +91,10 @@ impl StorageClient {
     pub async fn download_book_url(
         &self,
         id: i32,
-        file_format: FileFormat,
+        file_format: String,
     ) -> Result<String, get_object::GetObjectError> {
-        let key = format!("{}/{}.{}", id, id, file_format.extension());
-        let expire_in = std::time::Duration::from_mins(60);
+        let key = format!("{}/{}.{}", id, id, file_format);
+        let expire_in = std::time::Duration::from_secs(60*60);
         // TODO: add expire_in to env
 
         get_presigned_download_url(
