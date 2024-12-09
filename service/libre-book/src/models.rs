@@ -15,6 +15,7 @@ pub struct Book {
     pub rating: Option<f64>,
     pub description: Option<String>,
     pub added_date: NaiveDate,
+    pub extension: String,
 }
 
 #[derive(Insertable, Builder)]
@@ -25,4 +26,5 @@ pub struct NewBook {
     pub description: Option<String>,
     #[builder(default = "chrono::Local::now().naive_local().date()")]
     pub added_date: NaiveDate,
+    pub extension: String,
 }
