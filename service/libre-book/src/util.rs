@@ -37,9 +37,3 @@ pub fn load_env() {
     env::set_var("RUST_LOG", "debug");
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
 }
-
-//parse a file name without extension
-pub fn parse_file_name(file_name: &str) -> String {
-    let file_name = file_name.split('.').collect::<Vec<&str>>()[0];
-    file_name.to_string()
-}

@@ -22,13 +22,6 @@ pub struct NewBook {
     pub title: String,
     pub author: Option<String>,
     pub description: Option<String>,
+    #[builder(default = "chrono::Local::now().naive_local().date()")]
     pub added_date: NaiveDate,
-}
-
-impl NewBookBuilder {
-    pub fn with_defaults() -> Self {
-        let mut new_book = NewBookBuilder::default();
-        new_book.added_date(chrono::Local::now().naive_local().date());
-        new_book
-    }
 }
