@@ -1,8 +1,8 @@
 use actix_multipart::form::{tempfile::TempFile, MultipartForm};
 
 use actix_web::{web, HttpResponse};
-use std::io::Read;
 use file_format::FileFormat;
+use std::io::Read;
 
 use crate::{s3, extractor};
 
@@ -20,15 +20,14 @@ pub async fn upload(
 
     let mut buffer = Vec::new();
     payload.file.file.read_to_end(&mut buffer)?;
-    let buffer = buffer;
 
     let (book, cover) = match FileFormat::from_bytes(&buffer) {
         FileFormat::PortableDocumentFormat => {
-            todo!("pdf")
-        }
+            extractor::pdf::get_metadata(buffer, payload.file.file_name.as_ref())
+                .ok_or(ErrorBadRequest("Invalid pdf file"))?
+        },
         FileFormat::ElectronicPublication => {
-            extractor::epub::get_metadata(buffer)
-            .ok_or(ErrorBadRequest("Invalid epub file"))?
+            extractor::epub::get_metadata(buffer).ok_or(ErrorBadRequest("Invalid epub file"))?
         }
         FileFormat::PlainText => {
             todo!("txt")
