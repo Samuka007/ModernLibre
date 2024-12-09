@@ -15,6 +15,7 @@ pub fn get_metadata(epub_buffer: Vec<u8>) -> Option<(NewBook, DynamicImage)> {
     let book = NewBookBuilder::default()
         .title(title)
         .author(author)
+        .extension("epub".to_string())
         .build()
         .unwrap();
 
