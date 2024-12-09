@@ -1,4 +1,5 @@
 use chrono::NaiveDate;
+use derive_builder::Builder;
 use diesel::{Insertable, Queryable, Selectable};
 use serde::{Deserialize, Serialize};
 
@@ -15,11 +16,12 @@ pub struct Book {
     pub added_date: NaiveDate,
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, Builder)]
 #[diesel(table_name = crate::schema::books)]
 pub struct NewBook {
     pub title: String,
     pub author: Option<String>,
     pub description: Option<String>,
+    #[builder(default = "chrono::Local::now().naive_local().date()")]
     pub added_date: NaiveDate,
 }
