@@ -35,7 +35,7 @@ use libre_core::database::{postgres::PostgresPool, redis::RedisMultiplexClient};
 use libre_core::jsonwebtoken;
 
 use super::Error;
-use crate::env::HOST_URL;
+use crate::env::{FRONTEND_URL, HOST_URL};
 use crate::models;
 
 type GitHubClient = Client<
@@ -106,7 +106,7 @@ pub fn github_config(cfg: &mut web::ServiceConfig) {
         log::info!("GITHUB environments are not set. Start without github auth");
         return;
     }
-    let redirect_url = RedirectUrl::new(HOST_URL.to_string() + GITHUB_CALLBACK_PATH).unwrap();
+    let redirect_url = RedirectUrl::new(FRONTEND_URL.to_string() + GITHUB_CALLBACK_PATH).unwrap();
     let client = BasicClient::new(
         ClientId::new(client_id.unwrap()),
         Some(ClientSecret::new(client_secret.unwrap())),
@@ -209,9 +209,7 @@ async fn callback(
         token: jwt,
     };
 
-    Ok(HttpResponse::SeeOther()
-        .append_header(("Location", "/"))
-        .json(body))
+    Ok(HttpResponse::SeeOther().json(body))
 }
 
 async fn get_user_info_from_github(

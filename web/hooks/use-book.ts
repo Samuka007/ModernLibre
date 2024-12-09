@@ -10,8 +10,9 @@ export interface Book {
   description?: string
   status?: number
   rating?: number
-  added_date?: string
-  cover_url?: string
+  addedDate?: string
+  coverUrl?: string
+  extension?: string
 }
 
 export function useBook(bookId: number) {

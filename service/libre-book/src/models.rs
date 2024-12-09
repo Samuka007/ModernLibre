@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable)]
 #[diesel(table_name = crate::schema::books)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
+#[serde(rename_all = "camelCase")]
 pub struct Book {
     pub id: i32,
     pub cover_url: Option<String>,
