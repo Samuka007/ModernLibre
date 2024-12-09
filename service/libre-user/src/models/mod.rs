@@ -55,6 +55,17 @@ impl User {
             .map_err(Error::from)
     }
 
+    pub async fn find_by_casdoor_id(
+        casdoor_id: &str,
+        conn: &mut PooledConnection<'_, AsyncPgConnection>,
+    ) -> Result<Self, Error> {
+        user::table
+            .filter(user::casdoor_id.eq(casdoor_id))
+            .first(conn)
+            .await
+            .map_err(Error::from)
+    }
+
     pub async fn update_login(
         login: &str,
         new_login: &str,

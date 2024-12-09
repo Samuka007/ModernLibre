@@ -34,7 +34,7 @@ use std::env;
 use libre_core::database::{postgres::PostgresPool, redis::RedisMultiplexClient};
 use libre_core::jsonwebtoken;
 
-use super::Error;
+use super::{Error, LoginResponse};
 use crate::env::{FRONTEND_URL, HOST_URL};
 use crate::models;
 
@@ -145,12 +145,6 @@ async fn auth(
         .append_header(("Location", authorize_url.as_str()))
         .append_header(("X-CSRF-Token", csrf_state.as_str()))
         .finish()
-}
-
-#[derive(Serialize)]
-struct LoginResponse {
-    user: models::User,
-    token: String,
 }
 
 async fn callback(

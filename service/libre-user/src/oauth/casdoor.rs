@@ -7,7 +7,7 @@
 //! In order to run the example call:
 //!
 //! ```sh
-//! GITHUB_CLIENT_ID=xxx GITHUB_CLIENT_SECRET=yyy cargo run --example github
+//! CASDOOR_CLIENT_ID=xxx CASDOOR_CLIENT_SECRET=yyy cargo run --example github
 //! ```
 //!
 //! ...and follow the instructions.
@@ -34,7 +34,7 @@ use std::env;
 use libre_core::database::{postgres::PostgresPool, redis::RedisMultiplexClient};
 use libre_core::jsonwebtoken;
 
-use super::Error;
+use super::{Error, LoginResponse};
 use crate::env::HOST_URL;
 use crate::models;
 
@@ -89,36 +89,33 @@ pub struct CasdoorUser {
 impl From<CasdoorUser> for models::User {
     fn from(user: CasdoorUser) -> Self {
         Self {
-            uid: uuid::Uuid::new_v4(),
-            name: user.preferred_username.unwrap_or_else(|| user.name.clone()),
-            login: user.name,
-            avatar: user.picture.to_string(),
-            email: user.email.unwrap_or_default(),
-            created_at: chrono::Utc::now().naive_utc(),
-            admin: false,
-            github_id: None,
+            login: user.preferred_username,
+            name: user.name,
+            email: user.email,
+            avatar: user.picture,
             casdoor_id: Some(user.sub),
+            ..Default::default()
         }
     }
 }
 
-pub fn github_config(cfg: &mut web::ServiceConfig) {
-    let client_id = env::var("GITHUB_CLIENT_ID");
-    let client_secret = env::var("GITHUB_CLIENT_SECRET");
+pub fn casdoor_config(cfg: &mut web::ServiceConfig) {
+    let client_id = env::var("CASDOOR_CLIENT_ID");
+    let client_secret = env::var("CASDOOR_CLIENT_SECRET");
     if client_id.is_err() || client_secret.is_err() {
-        log::info!("GITHUB environments are not set. Start without github auth");
+        log::info!("CASDOOR environments are not set. Start without casdoor auth");
         return;
     }
-    let redirect_url = RedirectUrl::new(HOST_URL.to_string() + GITHUB_CALLBACK_PATH).unwrap();
+    let redirect_url = RedirectUrl::new(HOST_URL.to_string() + CASDOOR_CALLBACK_PATH).unwrap();
     let client = BasicClient::new(
         ClientId::new(client_id.unwrap()),
         Some(ClientSecret::new(client_secret.unwrap())),
-        AuthUrl::new(GITHUB_AUTH_URL.to_string()).unwrap(),
-        Some(TokenUrl::new(GITHUB_TOKEN_URL.to_string()).unwrap()),
+        AuthUrl::new(CASDOOR_AUTH_URL.to_string()).unwrap(),
+        Some(TokenUrl::new(CASDOOR_TOKEN_URL.to_string()).unwrap()),
     )
     .set_redirect_uri(redirect_url);
     cfg.service(
-        web::scope("/github")
+        web::scope("/casdoor")
             .app_data(client)
             .route("", web::get().to(auth))
             .route("/callback", web::get().to(callback)),
@@ -150,16 +147,10 @@ async fn auth(
         .finish()
 }
 
-#[derive(Serialize)]
-struct LoginResponse {
-    user: models::User,
-    token: String,
-}
-
 async fn callback(
     query: web::Query<super::CallbackQuery>,
     github: web::Data<GitHubClient>,
-    jwt: web::Data<jsonwebtoken::JwtUtil>,
+    jwt: web::Data<jsonwebtoken::TokenEncoder>,
     redis_pool: web::Data<RedisMultiplexClient>,
     postgres_pool: web::Data<PostgresPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
@@ -186,17 +177,17 @@ async fn callback(
             _ => actix_web::error::ErrorInternalServerError(err),
         })?;
 
-    let github_user = get_user_info_from_github(&token).await?;
+    let casdoor_user = get_user_info_from_casdoor(&token).await?;
     let mut conn = postgres_pool.get().await?;
 
-    let find_result = models::User::find_by_github_id(github_user.id, &mut conn).await;
+    let find_result = models::User::find_by_casdoor_id(&casdoor_user.sub, &mut conn).await;
 
     // Following are sign-in or sign-up logic
     let libre_user = match find_result {
         Ok(user) => user,
         Err(models::Error::NotFound) => {
             // Create a new user ==> sign-up
-            models::User::from(github_user).create(&mut conn).await?
+            models::User::from(casdoor_user).create(&mut conn).await?
         }
         Err(err) => return Err(err.into()),
     };
@@ -217,13 +208,9 @@ async fn callback(
         .json(body))
 }
 
-async fn get_user_info_from_github(
+async fn get_user_info_from_casdoor(
     token: &StandardTokenResponse<EmptyExtraTokenFields, BasicTokenType>,
-) -> Result<GitHubUser, Error> {
-    // NB: Github returns a single comma-separated "scope" parameter instead of multiple
-    // space-separated scopes. Github-specific clients can parse this scope into
-    // multiple scopes by splitting at the commas. Note that it's not safe for the
-    // library to do this by default because RFC 6749 allows scopes to contain commas.
+) -> Result<CasdoorUser, Error> {
     let scopes = if let Some(scopes_vec) = token.scopes() {
         scopes_vec
             .iter()
@@ -237,7 +224,7 @@ async fn get_user_info_from_github(
 
     let response = match token.token_type() {
         BasicTokenType::Bearer => reqwest::Client::new()
-            .get(GITHUB_USER_API_URL)
+            .get(CASDOOR_USER_API_URL)
             .header(
                 "Authorization",
                 format!("Bearer {}", token.access_token().secret()),
@@ -261,7 +248,7 @@ async fn get_user_info_from_github(
     }
 
     let user_info = response
-        .json::<GitHubUser>()
+        .json::<CasdoorUser>()
         .await
         .map_err(|_| Error::Other("Failed to parse user info from Github"))?;
 
