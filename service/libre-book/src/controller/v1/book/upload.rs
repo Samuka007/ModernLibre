@@ -1,7 +1,6 @@
 use actix_multipart::form::{tempfile::TempFile, MultipartForm};
 
 use actix_web::{web, HttpResponse};
-use aws_sdk_s3::Client as S3Client;
 use std::io::Read;
 use file_format::FileFormat;
 
@@ -15,7 +14,7 @@ pub struct UploadForm {
 
 pub async fn upload(
     mut payload: MultipartForm<UploadForm>,
-    storage: web::Data<S3Client>,
+    storage: web::Data<s3::StorageClient>,
 ) -> Result<HttpResponse, actix_web::Error> {
     use actix_web::error::*;
 
@@ -39,5 +38,6 @@ pub async fn upload(
         }
     };
 
-    todo!("Extract epub file");
+
+    todo!("");
 }
