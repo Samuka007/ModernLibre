@@ -39,7 +39,8 @@ impl User {
         input_login: &str,
         conn: &mut PooledConnection<'_, AsyncPgConnection>,
     ) -> Result<Self, Error> {
-        users.filter(login.eq(input_login))
+        users
+            .filter(login.eq(input_login))
             .select(User::as_select())
             .first(conn)
             .await
@@ -50,7 +51,8 @@ impl User {
         input_github_id: u64,
         conn: &mut PooledConnection<'_, AsyncPgConnection>,
     ) -> Result<Self, Error> {
-        users.filter(github_id.eq(input_github_id as i64))
+        users
+            .filter(github_id.eq(input_github_id as i64))
             .select(User::as_select())
             .first(conn)
             .await
@@ -61,7 +63,8 @@ impl User {
         input_casdoor_id: &str,
         conn: &mut PooledConnection<'_, AsyncPgConnection>,
     ) -> Result<Self, Error> {
-        users.filter(casdoor_id.eq(input_casdoor_id))
+        users
+            .filter(casdoor_id.eq(input_casdoor_id))
             .select(User::as_select())
             .first(conn)
             .await
@@ -147,7 +150,7 @@ impl From<diesel::result::Error> for Error {
             _ => {
                 log::warn!("Database error: {:?}", err);
                 Error::InternalServerError
-            },
+            }
         }
     }
 }

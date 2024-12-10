@@ -11,7 +11,7 @@ use actix_web_httpauth::extractors::bearer::BearerAuth;
 
 pub mod init;
 
-pub use init::{init_encoder, init_decoder};
+pub use init::{init_decoder, init_encoder};
 
 pub struct TokenEncoder {
     pub private_key: EncodingKey,
@@ -30,10 +30,7 @@ pub struct TokenDecoder {
 }
 
 impl TokenDecoder {
-    pub fn validate(
-        &self,
-        token: &str,
-    ) -> Result<TokenData<Claims>, jsonwebtoken::errors::Error> {
+    pub fn validate(&self, token: &str) -> Result<TokenData<Claims>, jsonwebtoken::errors::Error> {
         decode::<Claims>(token, &self.public_key, &Validation::new(self.algorithm))
     }
 }
@@ -67,7 +64,10 @@ impl Claims {
         self
     }
 
-    pub fn generate_jwt(&self, jwt_util: &TokenEncoder) -> Result<String, jsonwebtoken::errors::Error> {
+    pub fn generate_jwt(
+        &self,
+        jwt_util: &TokenEncoder,
+    ) -> Result<String, jsonwebtoken::errors::Error> {
         jwt_util.generate_jwt(self)
     }
 }
@@ -105,6 +105,6 @@ pub async fn validator_no_data(
         .app_data::<TokenDecoder>()
         .expect("JwtUtil is not configured");
     jwt.validate(credentials.token())
-    .map_err(|e| actix_web::error::ErrorUnauthorized(e.to_string()))?;
+        .map_err(|e| actix_web::error::ErrorUnauthorized(e.to_string()))?;
     Ok(req)
 }
