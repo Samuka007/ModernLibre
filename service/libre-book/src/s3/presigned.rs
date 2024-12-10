@@ -53,18 +53,24 @@ pub async fn get_presigned_upload_url(
         .map_err(|e| e.into_service_error())
 }
 
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[actix_web::test]
     async fn test_get_presigned_download_url() {
+        if dotenv::dotenv().is_err() {
+            println!("Failed to read .env file");
+        } else {
+            println!(".env file loaded successfully");
+        }
         let client = crate::s3::s3_client();
         let object = "test.txt";
         let bucket = "test-bucket";
         let expire_in = std::time::Duration::from_secs(60);
 
-        let presigned_request = get_presigned_download_url(&client, object, bucket, expire_in)
+        let presigned_request = get_presigned_download_url(&client.await, object, bucket, expire_in)
             .await
             .expect("Get presigned download url");
 
@@ -75,12 +81,17 @@ mod tests {
 
     #[actix_web::test]
     async fn test_get_presigned_upload_url() {
+        if dotenv::dotenv().is_err() {
+            println!("Failed to read .env file");
+        } else {
+            println!(".env file loaded successfully");
+        }
         let client = crate::s3::s3_client();
         let object = "test.txt";
         let bucket = "test-bucket";
         let expire_in = std::time::Duration::from_secs(60);
 
-        let presigned_request = get_presigned_upload_url(&client, object, bucket, expire_in)
+        let presigned_request = get_presigned_upload_url(&client.await, object, bucket, expire_in)
             .await
             .expect("Get presigned upload url");
 

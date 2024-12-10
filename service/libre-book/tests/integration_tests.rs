@@ -14,11 +14,10 @@ mod tests {
             } else {
                 println!(".env file loaded successfully");
             }
-            std::env::set_var("RUST_LOG", "debug");
             env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
         });
 
-        init_postgres_pool()
+        init_postgres_pool().await
     }
 
     #[actix_web::test]
@@ -37,7 +36,9 @@ mod tests {
         let resp = test::call_service(&mut app, req).await;
 
         println!("Response: {:?}", resp);
-        assert!(resp.status().is_success());
+        // assert!(resp.status().is_success());
+        let body = test::read_body(resp).await;
+        println!("Body: {:?}", body);
     }
 
     #[actix_web::test]

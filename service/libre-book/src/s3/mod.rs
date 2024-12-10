@@ -11,7 +11,7 @@ pub use local::*;
 ///
 /// TODO:
 /// - [ ] 支持热重载
-pub fn s3_client() -> aws_sdk_s3::Client {
+pub async fn s3_client() -> aws_sdk_s3::Client {
     let s3_endpoint = std::env::var("S3_ENDPOINT").expect("S3_ENDPOINT");
     let s3_region_var = std::env::var("S3_REGION").expect("S3_REGION");
 
@@ -19,10 +19,7 @@ pub fn s3_client() -> aws_sdk_s3::Client {
     std::env::var("AWS_ACCESS_KEY_ID").expect("AWS_ACCESS_KEY_ID");
     std::env::var("AWS_SECRET_ACCESS_KEY").expect("AWS_SECRET_ACCESS_KEY");
 
-    let runtime = actix_web::rt::Runtime::new().unwrap();
-    let shared_config = runtime.block_on(aws_config::load_defaults(
-        aws_config::BehaviorVersion::latest(),
-    ));
+    let shared_config = aws_config::load_defaults(aws_config::BehaviorVersion::latest()).await;
     let s3_region = aws_sdk_s3::config::Region::new(s3_region_var);
     let conf = aws_sdk_s3::config::Builder::from(&shared_config)
         .endpoint_url(s3_endpoint)
@@ -39,9 +36,9 @@ pub struct StorageClient {
 }
 
 impl StorageClient {
-    pub fn new_from_env() -> Self {
+    pub async fn new_from_env() -> Self {
         Self {
-            client: s3_client(),
+            client: s3_client().await,
             public_bucket_name: std::env::var("PUBLIC_BUCKET").unwrap(),
             private_bucket_name: std::env::var("PRIVATE_BUCKET").unwrap(),
         }
