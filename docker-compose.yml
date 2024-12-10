@@ -22,8 +22,8 @@ services:
     ports:
       - "8085:8085"
   libre-front:
-    build: ./web
-    container_name: ghcr.io/samuka007/libre-front:v0.2
+    image: ghcr.io/samuka007/libre-front:v0.3
+    container_name: libre-front
     # environment:
     #   - NEXT_PUBLIC_LIBRE_USER_BACKEND_URL=http://172.24.4.207:8085
     #   - NEXT_PUBLIC_LIBRE_BOOK_BACKEND_URL=http://172.24.4.207:8083
