@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  libre-book:
+    build: ./service/libre-book
+    container_name: libre-book
+    env_file:
+      - ./service/.env
+    ports:
+      - "8083:8083"
+  libre-user:
+    build: ./service/libre-user
+    container_name: libre-user
+    env_file:
+      - ./service/.env
+    ports:
+      - "8085:8085"
+  libre-front:
+    build: ./web
+    container_name: libre-front
+    environment:
+      - NEXT_PUBLIC_LIBRE_USER_BACKEND_URL=http://172.24.4.207:8085
+      - NEXT_PUBLIC_LIBRE_BOOK_BACKEND_URL=http://172.24.4.207:8083
+    ports:
+      - "3000:3000"

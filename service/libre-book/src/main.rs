@@ -13,7 +13,7 @@ async fn main() -> std::io::Result<()> {
             .configure(libre_core::database::postgres::init) // 将连接池传递给App
             .configure(init_routes)
     })
-    .bind("127.0.0.1:8083")?
+    .bind("0.0.0.0:8083")?
     .run()
     .await
 }

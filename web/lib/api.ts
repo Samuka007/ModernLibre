@@ -1,6 +1,6 @@
 import { cache } from 'react';
 
-const LIBRE_BACKEND_URL = process.env.NEXT_PUBLIC_LIBRE_BACKEND_URL;
+const LIBRE_BACKEND_URL = process.env.NEXT_PUBLIC_LIBRE_BOOK_BACKEND_URL;
 const TIMEOUT_MS = 5000; // 5 seconds timeout
 
 // Create an in-memory cache for books

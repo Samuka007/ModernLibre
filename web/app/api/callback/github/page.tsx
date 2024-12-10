@@ -15,7 +15,7 @@ function CallbackContent() {
         if (code) {
             const fetchData = async () => {
                 try {
-                    const authUrl = `${process.env.NEXT_PUBLIC_LIBRE_BACKEND_URL}/oauth/github/callback?code=${code}&state=${state}`;
+                    const authUrl = `${process.env.NEXT_PUBLIC_LIBRE_USER_BACKEND_URL}/oauth/github/callback?code=${code}&state=${state}`;
                     const response = await fetch(authUrl, {
                         method: 'GET',
                         headers: {
