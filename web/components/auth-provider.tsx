@@ -47,11 +47,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const github = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_LIBRE_BACKEND_URL}/auth/github`
+    window.location.href = `${process.env.NEXT_PUBLIC_LIBRE_BACKEND_URL}/oauth/github`
   }
 
   const casdoor = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_LIBRE_BACKEND_URL}/auth/casdoor`
+    window.location.href = `${process.env.NEXT_PUBLIC_LIBRE_BACKEND_URL}/oauth/casdoor`
   }
 
   const logout = () => {

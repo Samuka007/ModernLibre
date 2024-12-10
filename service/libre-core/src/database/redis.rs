@@ -15,7 +15,7 @@ impl RedisMultiplexClient {
 }
 
 pub fn init(cfg: &mut web::ServiceConfig) {
-    cfg.app_data(init_redis_pool());
+    cfg.app_data(web::Data::new(init_redis_pool()));
 }
 
 pub fn init_redis_pool() -> RedisMultiplexClient {

@@ -20,7 +20,7 @@ pub fn load_env() {
 
 lazy_static! {
     pub static ref HOST_URL: String =
-        std::env::var("HOST_URL").unwrap_or_else(|_| "http://localhost:8080".to_string());
+        std::env::var("HOST_URL").unwrap_or_else(|_| "http://192.168.199.178:8085".to_string());
     pub static ref FRONTEND_URL: String =
-        std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:3000".to_string());
+        std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://192.168.199.178:3000".to_string());
 }
