@@ -13,6 +13,7 @@ pub struct BooksListQuery {
     pub by: Option<String>,
 }
 
+#[actix_web::get("/list")]
 pub async fn list(
     db_pool: web::Data<PostgresPool>,
     query: web::Query<BooksListQuery>,

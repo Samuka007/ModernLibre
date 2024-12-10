@@ -25,7 +25,7 @@ r2d2 = "0.8.10"
 redis = { version = "0.27.6", features = ["tokio-comp", "aio", "r2d2"] }
 rsa = "0.9.7"
 rand = "0.8.5"
-oauth2 = "4.4.2"
+oauth2 = "5.0.0-rc.1"
 url = "2.5.4"
 anyhow = "1.0.94"
 reqwest = { version = "0.12.9", features = ["json"] }
