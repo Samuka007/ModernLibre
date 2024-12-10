@@ -24,8 +24,8 @@ services:
   libre-front:
     build: ./web
     container_name: libre-front
-    environment:
-      - NEXT_PUBLIC_LIBRE_USER_BACKEND_URL=http://172.24.4.207:8085
-      - NEXT_PUBLIC_LIBRE_BOOK_BACKEND_URL=http://172.24.4.207:8083
+    # environment:
+    #   - NEXT_PUBLIC_LIBRE_USER_BACKEND_URL=http://172.24.4.207:8085
+    #   - NEXT_PUBLIC_LIBRE_BOOK_BACKEND_URL=http://172.24.4.207:8083
     ports:
       - "3000:3000"
