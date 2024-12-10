@@ -31,7 +31,6 @@ pub async fn download(bookid: web::Path<i32>, client: web::Data<Client>) -> Http
         .body(temp_stream);
 }
 
-
 pub async fn oss_temp_credential(client: web::Data<Client>) -> HttpResponse {
     HttpResponse::Ok().json(
         s3::get_presigned_download_url(

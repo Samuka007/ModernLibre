@@ -1,4 +1,4 @@
-use crate::{schema, models};
+use crate::{models, schema};
 use actix_web::{web, HttpResponse};
 use serde::Deserialize;
 
@@ -13,6 +13,7 @@ pub struct BooksListQuery {
     pub by: Option<String>,
 }
 
+#[actix_web::get("/list")]
 pub async fn list(
     db_pool: web::Data<PostgresPool>,
     query: web::Query<BooksListQuery>,
@@ -51,7 +52,8 @@ pub async fn list(
                 _ => return Err(actix_web::error::ErrorBadRequest("Invalid query parameter")),
             }
         }
-    }.map_err(|e| actix_web::error::ErrorInternalServerError(e))?;
+    }
+    .map_err(|e| actix_web::error::ErrorInternalServerError(e))?;
 
     Ok(HttpResponse::Ok().json(books))
 }

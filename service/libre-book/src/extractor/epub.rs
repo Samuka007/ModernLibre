@@ -12,11 +12,12 @@ pub fn get_metadata(epub_buffer: Vec<u8>) -> Option<(NewBook, DynamicImage)> {
 
     let author = epub_doc.mdata("creator").or(epub_doc.mdata("author"));
 
-    let book = NewBookBuilder::with_defaults()
+    let book = NewBookBuilder::default()
         .title(title)
         .author(author)
+        .extension("epub".to_string())
         .build()
-        .ok()?;
+        .unwrap();
 
     let (cover_data, _) = epub_doc.get_cover().unwrap_or_default();
 

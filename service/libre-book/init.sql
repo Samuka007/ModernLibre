@@ -1,8 +1,17 @@
 -- Connect to the modernlibre database
 \c modernlibre;
 
+-- Drop existing tables if they exist
+DROP TABLE IF EXISTS BOOKS CASCADE;
+DROP TABLE IF EXISTS CATEGORY CASCADE;
+DROP TABLE IF EXISTS BOOKCATEGORY CASCADE;
+DROP TABLE IF EXISTS READINGLIST CASCADE;
+DROP TABLE IF EXISTS READINGLISTBOOK CASCADE;
+DROP TABLE IF EXISTS SUBSCRIPTION CASCADE;
+DROP TABLE IF EXISTS chapters CASCADE;
+
 -- Create tables
-CREATE TABLE BOOK (
+CREATE TABLE BOOKS (
     id SERIAL PRIMARY KEY,  -- 书本 ID
     title VARCHAR(255) NOT NULL, -- 书本标题
     author VARCHAR(255) NOT NULL, -- 作者
@@ -10,8 +19,8 @@ CREATE TABLE BOOK (
     status INT, -- 0: Inactive, 1: Active
     rating FLOAT,   -- 评分
     added_date DATE,  -- 添加日期
-    file_url VARCHAR(255),  -- 书本文件的 URL
-    cover_url VARCHAR(255)  -- 书本封面的 URL
+    cover_url VARCHAR(255),  -- 书本封面的 URL
+    extension VARCHAR(255)  -- 书本文件的扩展名
 );
 
 CREATE TABLE CATEGORY (
@@ -20,15 +29,9 @@ CREATE TABLE CATEGORY (
 );
 
 CREATE TABLE BOOKCATEGORY (
-    book_id INT REFERENCES BOOK(id),    -- 书本 ID
+    book_id INT REFERENCES BOOKS(id),    -- 书本 ID
     category_id INT REFERENCES CATEGORY(id),    -- 分类 ID
     PRIMARY KEY (book_id, category_id)
-);
-
-CREATE TABLE "USER" (
-    id SERIAL PRIMARY KEY,  -- 用户 ID
-    username VARCHAR(255) NOT NULL,   -- 用户名
-    email VARCHAR(255) NOT NULL -- 电子邮件
 );
 
 CREATE TABLE READINGLIST (
@@ -40,7 +43,7 @@ CREATE TABLE READINGLIST (
 
 CREATE TABLE READINGLISTBOOK (
     reading_list_id INT REFERENCES READINGLIST(id), -- 书单 ID
-    book_id INT REFERENCES BOOK(id),    -- 书本 ID
+    book_id INT REFERENCES BOOKS(id),    -- 书本 ID
     PRIMARY KEY (reading_list_id, book_id)
 );
 
@@ -57,15 +60,15 @@ CREATE TABLE chapters (
     content TEXT NOT NULL,
     level INT NOT NULL,
     parent_id INT,
-    book_id INT REFERENCES BOOK(id),
+    book_id INT REFERENCES BOOKS(id),
     created_time DATE,
     updated_time DATE
 );
 
 -- Insert test data
-INSERT INTO BOOK (title, author, description, status, rating, added_date, file_url, cover_url) VALUES
-('Book One', 'Author One', 'Description One', 1, 4.5, '2023-01-01', 'file_url_1', 'cover_url_1'),
-('Book Two', 'Author Two', 'Description Two', 1, 4.0, '2023-02-01', 'file_url_2', 'cover_url_2');
+INSERT INTO BOOKS (title, author, description, status, rating, added_date, cover_url, extension) VALUES
+('Book One', 'Author One', 'Description One', 1, 4.5, '2023-01-01', 'cover_url_1', 'pdf'),
+('Book Two', 'Author Two', 'Description Two', 1, 4.0, '2023-02-01', 'cover_url_2', 'epub');
 
 INSERT INTO CATEGORY (name) VALUES
 ('Fiction'),

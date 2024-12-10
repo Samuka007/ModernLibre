@@ -2,21 +2,24 @@
 
 import { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { getSigninUrl } from '@/lib/casdoor'
 import { toast } from 'sonner'
 
 interface User {
+  uid: string
+  login: string
   name: string
-  displayName: string
   avatar: string
   email: string
-  phone: string
-  [key: string]: any
+  created_at: string
+  admin: boolean
+  github_id: string
+  casdoor_id: string
 }
 
 interface AuthContextType {
   user: User | null
-  login: () => void
+  github: () => void
+  casdoor: () => void
   logout: () => void
   loading: boolean
 }
@@ -30,7 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const checkAuth = () => {
-      const storedUser = localStorage.getItem('casdoorUser')
+      const storedUser = localStorage.getItem('user')
       if (storedUser) {
         setUser(JSON.parse(storedUser))
         document.cookie = 'auth=true; path=/'
@@ -43,21 +46,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('storage', checkAuth)
   }, [])
 
-  const login = () => {
-    const signinUrl = getSigninUrl()
-    if (signinUrl) {
-      toast.info('Redirecting to Casdoor login...')
-      console.log('Redirecting to:', signinUrl)
-      window.location.href = signinUrl
-    } else {
-      toast.error('Failed to get signin URL')
-      console.error('Failed to get signin URL')
-    }
+  const github = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_LIBRE_BACKEND_URL}/oauth/github`
+  }
+
+  const casdoor = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_LIBRE_BACKEND_URL}/oauth/casdoor`
   }
 
   const logout = () => {
-    localStorage.removeItem('casdoorUser')
-    localStorage.removeItem('casdoorState')
+    localStorage.removeItem('user')
     document.cookie = 'auth=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
     setUser(null)
     router.push('/')
@@ -65,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, github, casdoor, logout, loading }}>
       {children}
     </AuthContext.Provider>
   )

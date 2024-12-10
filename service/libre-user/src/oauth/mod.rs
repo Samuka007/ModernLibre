@@ -1,17 +1,25 @@
 use actix_web::web;
-use oauth2::{
-    AuthorizationCode, CsrfToken,
-};
-use serde::Deserialize;
+use oauth2::{AuthorizationCode, CsrfToken};
+use serde::{Deserialize, Serialize};
 
+mod casdoor;
 mod error;
-mod github;
+// mod github;
 pub use error::Error;
 
+use crate::{env::FRONTEND_URL, models};
+
 pub fn init(cfg: &mut web::ServiceConfig) {
+    let cors = actix_cors::Cors::default()
+        .allowed_origin(&FRONTEND_URL)
+        .allow_any_method()
+        .allow_any_header()
+        .max_age(3600);
     cfg.service(
         web::scope("/oauth")
-        .configure(github::github_config)
+            .wrap(cors)
+            // .configure(github::github_config)
+            .configure(casdoor::casdoor_config),
     );
 }
 
@@ -19,6 +27,12 @@ pub fn init(cfg: &mut web::ServiceConfig) {
 pub struct CallbackQuery {
     code: AuthorizationCode,
     state: CsrfToken,
+}
+
+#[derive(Serialize)]
+struct LoginResponse {
+    user: models::User,
+    token: String,
 }
 
 // #[derive(Deserialize, Debug)]
