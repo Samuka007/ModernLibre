@@ -139,23 +139,23 @@ impl TryFrom<CasdoorUser> for models::NewUser {
     }
 }
 
-impl TryFrom<CasdoorUser> for models::NewUser {
-    type Error = crate::oauth::Error;
+// impl TryFrom<CasdoorUser> for models::NewUser {
+//     type Error = crate::oauth::Error;
 
-    fn try_from(user: CasdoorUser) -> Result<Self, Self::Error> {
-        let username = user.name.ok_or(Error::Other("Name is required"))?;
-        Ok(
-            Self {
-                login: username.clone(),
-                name: user.preferred_username,
-                email: user.email,
-                avatar: user.picture,
-                casdoor_id: Some(user.sub),
-                ..Default::default()
-            }
-        )
-    }
-}
+//     fn try_from(user: CasdoorUser) -> Result<Self, Self::Error> {
+//         let username = user.name.ok_or(Error::Other("Name is required"))?;
+//         Ok(
+//             Self {
+//                 login: username.clone(),
+//                 name: user.preferred_username,
+//                 email: user.email,
+//                 avatar: user.picture,
+//                 casdoor_id: Some(user.sub),
+//                 ..Default::default()
+//             }
+//         )
+//     }
+// }
 
 pub fn casdoor_config(cfg: &mut web::ServiceConfig) {
     let client_id = env::var("CASDOOR_CLIENT_ID");
@@ -255,8 +255,8 @@ async fn callback(
         Err(models::Error::NotFound) => {
             // Create a new user ==> sign-up
             // models::User::try_from(casdoor_user)?
-                .create(&mut conn)
-                .await?
+            //     .create(&mut conn)
+            //     .await?
             models::NewUser::try_from(casdoor_user)?.create(&mut conn).await?
         }
         Err(err) => return Err(err.into()),
