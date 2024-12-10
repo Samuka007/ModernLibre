@@ -6,7 +6,6 @@ WORKDIR /app
 
 COPY ./Cargo.toml ./Cargo.toml
 COPY ./diesel.toml ./diesel.toml
-COPY ./Cargo.lock ./Cargo.lock
 COPY ./libre-book ./libre-book
 COPY ./libre-core ./libre-core
 COPY ./libre-user ./libre-user
