@@ -4,7 +4,7 @@ use diesel::{Insertable, Queryable, Selectable};
 use diesel_async::pooled_connection::bb8::PooledConnection;
 use diesel_async::{AsyncPgConnection, RunQueryDsl};
 use serde::{Deserialize, Serialize};
-
+use derive_builder::Builder;
 use crate::schema::users::dsl::*;
 
 #[derive(Default, Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone)]
@@ -161,5 +161,36 @@ impl From<Error> for actix_web::Error {
             }
             Error::Conflict => actix_web::error::ErrorConflict("Conflict"),
         }
+    }
+}
+
+
+#[derive(Insertable, Builder)]
+#[derive(Default, Debug, Serialize, Deserialize, Queryable, Selectable, Clone)]
+#[diesel(check_for_backend(diesel::pg::Pg))]
+#[diesel(table_name = crate::schema::users)]
+pub struct NewUser {
+    pub uid: uuid::Uuid,
+    pub login: String,
+    pub name: Option<String>,
+    pub avatar: Option<String>,
+    pub email: Option<String>,
+    pub created_at: NaiveDateTime,
+    pub admin: bool,
+    pub github_id: Option<i64>,
+    pub casdoor_id: Option<String>,
+}
+
+impl NewUser {
+    pub async fn create(
+        &self,
+        conn: &mut PooledConnection<'_, AsyncPgConnection>,
+    ) -> Result<User, Error> {
+        // TODO: should use `let now = select(diesel::dsl::now).get_result::<SystemTime>(conn)?;`
+        diesel::insert_into(users)
+            .values(self)
+            .get_result(conn)
+            .await
+            .map_err(Error::from)
     }
 }
