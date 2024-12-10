@@ -16,9 +16,9 @@ export default function ProfilePage() {
     return null
   }
 
-  const initials = user.displayName
-    ? user.displayName.split(' ').map(n => n[0]).join('').toUpperCase()
-    : user.name.substring(0, 2).toUpperCase()
+  const initials = user.name
+    ? user.name.split(' ').map(n => n[0]).join('').toUpperCase()
+    : user.login.substring(0, 2).toUpperCase()
 
   return (
     <div className="min-h-screen bg-background">
@@ -39,11 +39,11 @@ export default function ProfilePage() {
           <CardHeader>
             <div className="flex items-center gap-4">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={user.avatar} alt={user.displayName || user.name} />
+                <AvatarImage src={user.avatar} alt={user.name || user.login} />
                 <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
               </Avatar>
               <div>
-                <CardTitle className="text-2xl">{user.displayName || user.name}</CardTitle>
+                <CardTitle className="text-2xl">{user.name || user.login}</CardTitle>
                 <p className="text-muted-foreground">Member since {new Date().getFullYear()}</p>
               </div>
             </div>
@@ -51,24 +51,11 @@ export default function ProfilePage() {
           <CardContent className="space-y-6">
             <div className="space-y-2">
               <Label>Display Name</Label>
-              <Input value={user.displayName || user.name} readOnly />
+              <Input value={user.name || user.login} readOnly />
             </div>
             <div className="space-y-2">
               <Label>Email</Label>
               <Input value={user.email} readOnly />
-            </div>
-            {user.phone && (
-              <div className="space-y-2">
-                <Label>Phone</Label>
-                <Input value={user.phone} readOnly />
-              </div>
-            )}
-            <div className="pt-4">
-              <Button asChild>
-                <Link href="https://door.casdoor.com/account" target="_blank">
-                  Edit Profile on Casdoor
-                </Link>
-              </Button>
             </div>
           </CardContent>
         </Card>
