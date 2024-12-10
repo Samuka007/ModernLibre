@@ -238,7 +238,6 @@ async fn callback(
         Ok(user) => user,
         Err(models::Error::NotFound) => {
             // Create a new user ==> sign-up
-            // models::User::try_from(casdoor_user)?
             models::NewUser::try_from(casdoor_user)?.create(&mut conn).await?
         }
         Err(err) => return Err(err.into()),
