@@ -3,13 +3,11 @@
 
 [print_schema.books]
 file = "libre-book/src/schema.rs"
-with_docs = true
 custom_type_derives = ["diesel::query_builder::QueryId", "Clone"]
 filter = { only_tables = ["books"] }
 
 [print_schema.users]
 file = "libre-user/src/schema.rs"
-with_docs = true
 custom_type_derives = ["diesel::query_builder::QueryId", "Clone"]
 filter = { only_tables = ["users"] }
 
