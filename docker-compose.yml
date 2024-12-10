@@ -1,17 +1,21 @@
-version: '3.8'
-
 services:
-  libre-book:
+  libre-service:
     build: ./service
-    command: ["cargo", "run", "--bin", "libre-book"]
+    image: libre-service-image
+    env_file:
+      - ./service/.env
+
+  libre-book:
+    image: libre-service-image
+    command: ["./libre-book"]
     container_name: libre-book
     env_file:
       - ./service/.env
     ports:
       - "8083:8083"
   libre-user:
-    build: ./service
-    command: ["cargo", "run", "--bin", "libre-user"]
+    image: libre-service-image
+    command: ["./libre-user"]
     container_name: libre-user
     env_file:
       - ./service/.env
