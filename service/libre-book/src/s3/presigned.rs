@@ -53,7 +53,6 @@ pub async fn get_presigned_upload_url(
         .map_err(|e| e.into_service_error())
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -70,9 +69,10 @@ mod tests {
         let bucket = "test-bucket";
         let expire_in = std::time::Duration::from_secs(60);
 
-        let presigned_request = get_presigned_download_url(&client.await, object, bucket, expire_in)
-            .await
-            .expect("Get presigned download url");
+        let presigned_request =
+            get_presigned_download_url(&client.await, object, bucket, expire_in)
+                .await
+                .expect("Get presigned download url");
 
         let uri = presigned_request.uri();
         assert!(uri.contains(object));
