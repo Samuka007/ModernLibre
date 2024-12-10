@@ -53,4 +53,10 @@ function CallbackContent() {
     );
 }
 
-export default CallbackContent;
+export default function Page() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <CallbackContent />
+        </Suspense>
+    );
+}
