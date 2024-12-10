@@ -1,12 +1,12 @@
 services:
-  libre-service:
-    build: ./service
-    image: libre-service-image
-    env_file:
-      - ./service/.env
+  # libre-service:
+  #   build: ./service
+  #   image: libre-service-image
+  #   env_file:
+  #     - ./service/.env
 
   libre-book:
-    image: libre-service-image
+    image: ghcr.io/samuka007/libre-service-image:v0.2
     command: ["./libre-book"]
     container_name: libre-book
     env_file:
@@ -14,7 +14,7 @@ services:
     ports:
       - "8083:8083"
   libre-user:
-    image: libre-service-image
+    image: ghcr.io/samuka007/libre-service-image:v0.2
     command: ["./libre-user"]
     container_name: libre-user
     env_file:
@@ -23,7 +23,7 @@ services:
       - "8085:8085"
   libre-front:
     build: ./web
-    container_name: libre-front
+    container_name: ghcr.io/samuka007/libre-front:v0.2
     # environment:
     #   - NEXT_PUBLIC_LIBRE_USER_BACKEND_URL=http://172.24.4.207:8085
     #   - NEXT_PUBLIC_LIBRE_BOOK_BACKEND_URL=http://172.24.4.207:8083
