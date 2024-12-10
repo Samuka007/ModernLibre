@@ -36,9 +36,9 @@ mod tests {
         let resp = test::call_service(&mut app, req).await;
 
         println!("Response: {:?}", resp);
-        // assert!(resp.status().is_success());
-        let body = test::read_body(resp).await;
-        println!("Body: {:?}", body);
+        assert!(resp.status().is_success());
+        // let body = test::read_body(resp).await;
+        // println!("Body: {:?}", body);
     }
 
     #[actix_web::test]

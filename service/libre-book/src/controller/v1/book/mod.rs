@@ -18,14 +18,15 @@ pub fn service_config(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/books")
             .route("/details/{book_id}", web::get().to(get_book_details))
-            .route("/list", web::get().to(list::list)), // .service(
-                                                        //     web::resource("/upload")
-                                                        //         .app_data(init::decoder())
-                                                        //         .app_data(s3::s3_client())
-                                                        //         .wrap(middleware)
-                                                        //         .route(web::post().to(upload)),
-                                                        // )
-                                                        //
+            .route("/list", web::get().to(list::list)), 
+            // .service(
+            //     web::resource("/upload")
+            //         .app_data(init::decoder())
+            //         .app_data(s3::s3_client())
+            //         .wrap(middleware)
+            //         .route(web::post().to(upload)),
+            // )
+            //
     );
 }
 
