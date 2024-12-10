@@ -13,7 +13,7 @@
 //! ...and follow the instructions.
 //!
 
-use actix_web::{web, HttpResponse, Responder};
+use actix_web::{web, HttpResponse};
 
 use oauth2::basic::{BasicClient, BasicErrorResponseType, BasicTokenType};
 use oauth2::{
@@ -26,7 +26,6 @@ use oauth2::{
 };
 use redis::AsyncCommands as _;
 use serde::{Deserialize, Serialize};
-use url::Url;
 
 use std::env;
 
@@ -34,7 +33,7 @@ use libre_core::database::{postgres::PostgresPool, redis::RedisMultiplexClient};
 use libre_core::jsonwebtoken;
 
 use super::{Error, LoginResponse};
-use crate::env::{FRONTEND_URL, HOST_URL};
+use crate::env::FRONTEND_URL;
 use crate::models;
 
 type OAuthClient = Client<
@@ -55,7 +54,7 @@ const CASDOOR_AUTH_URL: &str = "/login/oauth/authorize";
 const CASDOOR_TOKEN_URL: &str = "/api/login/oauth/access_token";
 const CASDOOR_USER_API_URL: &str = "/api/userinfo";
 
-lazy_static::lazy_static!{
+lazy_static::lazy_static! {
     static ref CASDOOR_BASE_URL: String = std::env::var("CASDOOR_URL").unwrap_or_else(|_| "http://localhost:8000".to_string());
 }
 
@@ -90,7 +89,7 @@ pub struct CasdoorUser {
     pub phone: Option<String>,
     pub picture: Option<String>,
     pub preferred_username: Option<String>, // name
-    pub sub: String, // casdoor_id
+    pub sub: String,                        // casdoor_id
 }
 
 // impl From<CasdoorUser> for models::User {
@@ -111,16 +110,14 @@ impl TryFrom<CasdoorUser> for models::User {
 
     fn try_from(user: CasdoorUser) -> Result<Self, Self::Error> {
         let username = user.name.ok_or(Error::Other("Name is required"))?;
-        Ok(
-            Self {
-                login: username.clone(),
-                name: user.preferred_username,
-                email: user.email,
-                avatar: user.picture,
-                casdoor_id: Some(user.sub),
-                ..Default::default()
-            }
-        )
+        Ok(Self {
+            login: username.clone(),
+            name: user.preferred_username,
+            email: user.email,
+            avatar: user.picture,
+            casdoor_id: Some(user.sub),
+            ..Default::default()
+        })
     }
 }
 
@@ -221,7 +218,9 @@ async fn callback(
         Ok(user) => user,
         Err(models::Error::NotFound) => {
             // Create a new user ==> sign-up
-            models::User::try_from(casdoor_user)?.create(&mut conn).await?
+            models::User::try_from(casdoor_user)?
+                .create(&mut conn)
+                .await?
         }
         Err(err) => return Err(err.into()),
     };

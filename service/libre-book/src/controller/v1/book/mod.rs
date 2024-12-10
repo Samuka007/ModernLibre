@@ -1,11 +1,11 @@
-use crate::{models, s3, schema};
+use crate::{models, schema};
 use actix_web::{web, HttpResponse};
 
 use diesel::prelude::*;
 use diesel_async::RunQueryDsl;
 
 use libre_core::database::postgres::PostgresPool;
-use libre_core::jsonwebtoken::{init, validator_no_data};
+use libre_core::jsonwebtoken::validator_no_data;
 
 mod download;
 mod list;
@@ -18,7 +18,7 @@ pub fn service_config(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/books")
             .service(get_book_details)
-            .service(list::list)
+            .service(list::list),
     );
 }
 

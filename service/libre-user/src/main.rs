@@ -1,6 +1,6 @@
 use actix_web::{web, App, HttpServer};
 use libre_core::{
-    database::{self, postgres},
+    database::{self},
     jsonwebtoken,
 };
 use libre_user::{controller, oauth};

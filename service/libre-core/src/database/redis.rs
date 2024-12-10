@@ -19,8 +19,8 @@ pub fn init(cfg: &mut web::ServiceConfig) {
 }
 
 pub fn init_redis_pool() -> RedisMultiplexClient {
-    let client = redis::Client::open(
-        std::env::var(REDIS_URL).expect(&format!("{REDIS_URL} must be set"))
-    ).expect("Failed to create redis client"); // Enhancement: IO error handling
+    let client =
+        redis::Client::open(std::env::var(REDIS_URL).unwrap_or_else(|_| panic!("{REDIS_URL} must be set")))
+            .expect("Failed to create redis client"); // Enhancement: IO error handling
     RedisMultiplexClient(client)
 }

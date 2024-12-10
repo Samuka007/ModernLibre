@@ -1,8 +1,5 @@
-use actix_multipart::form::MultipartForm;
 use actix_web::{web, HttpResponse};
 use aws_sdk_s3::Client;
-use log::info;
-use std::io::Read;
 
 use crate::s3;
 
@@ -22,13 +19,13 @@ pub async fn download(bookid: web::Path<i32>, client: web::Data<Client>) -> Http
         temp_stream.extend_from_slice(&bytes);
     }
 
-    return HttpResponse::Ok()
+    HttpResponse::Ok()
         .content_type("application/epub+zip")
         .append_header((
             "Content-Disposition",
             format!("attachment; filename=\"{}.epub\"", bookid),
         ))
-        .body(temp_stream);
+        .body(temp_stream)
 }
 
 pub async fn oss_temp_credential(client: web::Data<Client>) -> HttpResponse {
