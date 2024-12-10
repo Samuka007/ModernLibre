@@ -53,36 +53,50 @@ pub async fn get_presigned_upload_url(
         .map_err(|e| e.into_service_error())
 }
 
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[actix_web::test]
     async fn test_get_presigned_download_url() {
+        if dotenv::dotenv().is_err() {
+            println!("Failed to read .env file");
+        } else {
+            println!(".env file loaded successfully");
+        }
         let client = crate::s3::s3_client();
         let object = "test.txt";
         let bucket = "test-bucket";
         let expire_in = std::time::Duration::from_secs(60);
 
-        let presigned_request = get_presigned_download_url(&client, object, bucket, expire_in)
+        let presigned_request = get_presigned_download_url(&client.await, object, bucket, expire_in)
             .await
             .expect("Get presigned download url");
 
-        let _ = presigned_request.uri();
-        // assert!(uri.contains(object));
-        // assert!(uri.contains(bucket));
+        let uri = presigned_request.uri();
+        assert!(uri.contains(object));
+        assert!(uri.contains(bucket));
     }
 
     #[actix_web::test]
     async fn test_get_presigned_upload_url() {
+        if dotenv::dotenv().is_err() {
+            println!("Failed to read .env file");
+        } else {
+            println!(".env file loaded successfully");
+        }
         let client = crate::s3::s3_client();
         let object = "test.txt";
         let bucket = "test-bucket";
         let expire_in = std::time::Duration::from_secs(60);
 
-        let presigned_request = get_presigned_upload_url(&client, object, bucket, expire_in)
+        let presigned_request = get_presigned_upload_url(&client.await, object, bucket, expire_in)
             .await
             .expect("Get presigned upload url");
+        let uri = presigned_request.uri();
+        assert!(uri.contains(object), "URI does not contain the object name");
+        assert!(uri.contains(bucket), "URI does not contain the bucket name");
 
         let _ = presigned_request
             .into_http_1x_request(aws_sdk_s3::primitives::ByteStream::from(vec![]));
