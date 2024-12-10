@@ -20,7 +20,7 @@ pub fn init(cfg: &mut web::ServiceConfig) {
     cfg.app_data(init_postgres_pool());
 }
 
-pub fn init_postgres_pool() -> PostgresPool {
+pub async fn init_postgres_pool() -> PostgresPool {
     // create a new connection pool with the default config
     let config = AsyncDieselConnectionManager::<diesel_async::AsyncPgConnection>::new(
         std::env::var(POSTGRES_URL).expect(&format!("{POSTGRES_URL} must be set")),
@@ -28,12 +28,10 @@ pub fn init_postgres_pool() -> PostgresPool {
     let max_conn = std::env::var(POSTGRES_MAX_CONN)
         .map(|s| s.parse().expect("Failed to parse max connection count"))
         .unwrap_or(10);
-    let pool = actix_web::rt::System::new()
-        .block_on(
-            Pool::builder()
-                .max_size(max_conn)
-                .build(config)
-        )
+    let pool = Pool::builder()
+        .max_size(max_conn)
+        .build(config)
+        .await
         .expect("Failed to create pool"); // Enhancement: IO error handling
     PostgresPool(pool)
 }
