@@ -20,4 +20,4 @@ RUN apt-get update && apt-get install -y libpq5 libssl1.1 ca-certificates
 WORKDIR /app
 COPY --from=build /app/target/release/libre-book /app/libre-book
 COPY --from=build /app/target/release/libre-user /app/libre-user
-COPY ./key ./key
+# COPY ./key ./key

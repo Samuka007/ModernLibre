@@ -14,7 +14,7 @@ function CallbackContent() {
         if (code && state) {
             const fetchData = async () => {
                 try {
-                    const authUrl = `${process.env.NEXT_PUBLIC_LIBRE_USER_BACKEND_URL}/oauth/casdoor/callback?code=${code}&state=${state}`;
+                    const authUrl = `${window.location.origin}/api/oauth/casdoor/callback?code=${code}&state=${state}`;
                     const response = await fetch(authUrl, {
                         method: 'GET',
                         headers: {
