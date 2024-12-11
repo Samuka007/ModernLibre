@@ -18,7 +18,7 @@ pub fn init_decoder(cfg: &mut web::ServiceConfig) {
 pub fn encoder() -> TokenEncoder {
     let algorithm = env_jwt_algorithm();
     let privkey_path =
-        std::env::var(JWT_PRIVATE_KEY_PATH).unwrap_or_else(|_| panic!("{JWT_PRIVATE_KEY_PATH} must be set"));
+        std::env::var(JWT_PRIVATE_KEY_PATH).unwrap_or("./key/private_key.pem".to_string());
     let priv_file = std::fs::read(privkey_path).expect("Failed to read private key file");
     let private_key =
         EncodingKey::from_rsa_pem(&priv_file).expect("Failed to parse private key file");
@@ -32,7 +32,7 @@ pub fn encoder() -> TokenEncoder {
 pub fn decoder() -> TokenDecoder {
     let algorithm = env_jwt_algorithm();
     let pubkey_path =
-        std::env::var(JWT_PUBLIC_KEY_PATH).unwrap_or_else(|_| panic!("{JWT_PUBLIC_KEY_PATH} must be set"));
+        std::env::var(JWT_PUBLIC_KEY_PATH).unwrap_or("./key/public_key.pem".to_string());
     let pub_file = std::fs::read(pubkey_path).expect("Failed to read public key file");
     let public_key = DecodingKey::from_rsa_pem(&pub_file).expect("Failed to parse public key file");
 

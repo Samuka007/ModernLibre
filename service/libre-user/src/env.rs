@@ -19,6 +19,5 @@ pub fn load_env() {
 }
 
 lazy_static! {
-    pub static ref HOST_URL: String = std::env::var("HOST_URL").expect("HOST_URL must be set");
     pub static ref FRONTEND_URL: String = std::env::var("FRONTEND_URL").expect("FRONTEND_URL must be set");
 }

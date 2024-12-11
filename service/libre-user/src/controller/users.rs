@@ -67,6 +67,7 @@ async fn get_user_with_login(
     // let _request_user = ext
     //     .get::<jwt::Claims>()
     //     .ok_or(actix_web::error::ErrorUnauthorized("User not found"))?;
+    log::debug!("Get user with login: {}", param.login);
 
     let mut conn = pool.get().await?;
 

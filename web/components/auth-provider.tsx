@@ -26,6 +26,13 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+import type { GetServerSideProps } from "next";
+
+type Props = { host: string | null };
+
+export const getServerSideProps: GetServerSideProps<Props> =
+  async context => ({ props: { host: context.req.headers.host || null } });
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -40,18 +47,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       setLoading(false)
     }
-
+    
     checkAuth()
     window.addEventListener('storage', checkAuth)
     return () => window.removeEventListener('storage', checkAuth)
   }, [])
-
+  
   const github = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_LIBRE_BACKEND_URL}/oauth/github`
+    window.location.href = `${window.location.origin}/api/oauth/github`
   }
 
   const casdoor = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_LIBRE_BACKEND_URL}/oauth/casdoor`
+    window.location.href = `${window.location.origin}/api/oauth/casdoor`
   }
 
   const logout = () => {

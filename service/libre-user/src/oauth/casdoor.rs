@@ -49,7 +49,8 @@ type OAuthClient = Client<
     oauth2::EndpointSet,
 >;
 
-const CASDOOR_CALLBACK_PATH: &str = "/api/callback/casdoor";
+const CASDOOR_CALLBACK_PATH: &str = "/callback/casdoor";
+
 const CASDOOR_AUTH_URL: &str = "/login/oauth/authorize";
 const CASDOOR_TOKEN_URL: &str = "/api/login/oauth/access_token";
 const CASDOOR_USER_API_URL: &str = "/api/userinfo";
