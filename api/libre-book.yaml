@@ -104,7 +104,67 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/BookMeta'
+  /books/download:
+    get:
+      summary: Download Book
+      description: Download the book with the given ID and extension.
+      parameters:
+        - name: bookId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: extension
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - pdf
+              - epub
+              - mobi
+              - txt
+      security:
+        - bearerAuth: []
+      responses:
+        '302':
+          description: Redirect to download link
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+                example: https://example.com/books/123/download.pdf
+        '404':
+          description: Book not found
+  /books/upload:
+    post:
+      summary: Upload a Book
+      description: Upload a new book file.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Book uploaded successfully
+        '400':
+          description: Invalid file format
+        '500':
+          description: Internal server error
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
   schemas:
     BookMeta:
       type: object

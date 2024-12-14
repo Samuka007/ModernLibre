@@ -13,12 +13,14 @@ mod upload;
 
 #[inline]
 pub fn service_config(cfg: &mut web::ServiceConfig) {
-    let middleware = actix_web_httpauth::middleware::HttpAuthentication::bearer(validator_no_data);
+    let mw = actix_web_httpauth::middleware::HttpAuthentication::bearer(validator_no_data);
 
     cfg.service(
         web::scope("/books")
             .service(get_book_details)
-            .service(list::list),
+            .service(list::list)
+            .route("/download", web::get().to(download::oss_temp_credential).wrap(mw.clone()))
+            .route("/upload", web::post().to(upload::upload).wrap(mw))
     );
 }
 
