@@ -20,40 +20,39 @@ pub async fn list(
 ) -> Result<HttpResponse, actix_web::Error> {
     let mut conn = db_pool.get().await?;
 
-    let books = match query.into_inner() {
-        BooksListQuery { limit, by } => {
-            let limit = limit.unwrap_or(10) as i64;
-            let by = by.unwrap_or("id".to_string());
-            match by.as_str() {
-                "id" => {
-                    schema::books::dsl::books
-                        .select(models::Book::as_select())
-                        .order(schema::books::id.desc())
-                        .limit(limit)
-                        .load::<models::Book>(&mut conn)
-                        .await
-                }
-                "recent" => {
-                    schema::books::dsl::books
-                        .select(models::Book::as_select())
-                        .order(schema::books::added_date.desc())
-                        .limit(limit)
-                        .load::<models::Book>(&mut conn)
-                        .await
-                }
-                "top-rated" => {
-                    schema::books::dsl::books
-                        .select(models::Book::as_select())
-                        .order(schema::books::rating.desc())
-                        .limit(limit)
-                        .load::<models::Book>(&mut conn)
-                        .await
-                }
-                _ => return Err(actix_web::error::ErrorBadRequest("Invalid query parameter")),
+    let BooksListQuery { limit, by } = query.into_inner();
+    let books = {
+        let limit = limit.unwrap_or(10) as i64;
+        let by = by.unwrap_or("id".to_string());
+        match by.as_str() {
+            "id" => {
+                schema::books::dsl::books
+                    .select(models::Book::as_select())
+                    .order(schema::books::id.desc())
+                    .limit(limit)
+                    .load::<models::Book>(&mut conn)
+                    .await
             }
+            "recent" => {
+                schema::books::dsl::books
+                    .select(models::Book::as_select())
+                    .order(schema::books::added_date.desc())
+                    .limit(limit)
+                    .load::<models::Book>(&mut conn)
+                    .await
+            }
+            "top-rated" => {
+                schema::books::dsl::books
+                    .select(models::Book::as_select())
+                    .order(schema::books::rating.desc())
+                    .limit(limit)
+                    .load::<models::Book>(&mut conn)
+                    .await
+            }
+            _ => return Err(actix_web::error::ErrorBadRequest("Invalid query parameter")),
         }
     }
-    .map_err(|e| actix_web::error::ErrorInternalServerError(e))?;
+    .map_err(actix_web::error::ErrorInternalServerError)?;
 
     Ok(HttpResponse::Ok().json(books))
 }

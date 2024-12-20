@@ -1,0 +1,52 @@
+services:
+  libre-service:
+    build: ./service
+    image: libre-service-image
+
+  libre-book:
+    # image: ghcr.io/samuka007/libre-service-image:v0.2
+    image: libre-service-image
+    command: ["./libre-book"]
+    environment:
+      - DATABASE_URL=postgres://postgres:dragonos@172.24.4.193:5432/new-modern-libre
+      - S3_ENDPOINT=http://192.168.199.127:9000
+      - S3_REGION=dragon-home
+      - AWS_ACCESS_KEY_ID=pAuJGAT2gxXyDE07nkM6
+      - AWS_SECRET_ACCESS_KEY=dMFgck6l9lrrmY14SI2AtFwAunOneGe63mWdepcP
+    ports:
+      - "8083:8083"
+    volumes:
+      - ./key:/app/key
+  libre-user:
+    # image: ghcr.io/samuka007/libre-service-image:v0.2
+    image: libre-service-image
+    command: ["./libre-user"]
+    environment:
+      - FRONTEND_URL=http://172.24.4.176 # ====需要配置这个====
+      - DATABASE_URL=postgres://postgres:dragonos@172.24.4.193:5432/new-modern-libre
+      - REDIS_URL=redis://172.24.4.63:6379
+      - CASDOOR_URL=http://172.24.4.63:8000
+      - CASDOOR_CLIENT_ID=16a0f3022162a555a333
+      - CASDOOR_CLIENT_SECRET=5680b31608e350b52d250e7aebbb5a27af0e50e3
+    ports:
+      - "8085:8085"
+    volumes:
+      - ./key:/app/key
+  libre-front:
+    # image: ghcr.io/samuka007/libre-front:v0.3
+    build: ./web
+    ports:
+      - "3000:3000"
+  nginx:
+    image: nginx:1.19-alpine
+    volumes:
+      - ./templates:/etc/nginx/templates
+    environment:
+      - NGINX_HOST=172.24.4.176 # ====和这个====
+      - NGINX_PORT=80
+    ports:
+      - 80:80
+    depends_on:
+      - libre-front
+      - libre-user
+      - libre-book

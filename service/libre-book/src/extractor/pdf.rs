@@ -1,10 +1,7 @@
 use image::DynamicImage;
 use pdf2image::{RenderOptionsBuilder, PDF as PDF2Image};
 
-use crate::{
-    models::{NewBook, NewBookBuilder},
-    schema::books::extension,
-};
+use crate::models::{NewBook, NewBookBuilder};
 
 pub fn get_metadata(
     pdf_buffer: Vec<u8>,
