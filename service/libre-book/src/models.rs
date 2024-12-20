@@ -28,11 +28,3 @@ pub struct NewBook {
     pub added_date: NaiveDate,
     pub extension: String,
 }
-
-impl NewBookBuilder {
-    pub fn with_defaults() -> Self {
-        let mut new_book = NewBookBuilder::default();
-        new_book.added_date(chrono::Local::now().naive_local().date());
-        new_book
-    }
-}
