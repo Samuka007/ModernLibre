@@ -6,11 +6,12 @@ import { ReactReader } from 'react-reader'
 
 export default function ReaderPage() {
     // get access token
-    const token = localStorage.getItem('accessToken')
+    const token = localStorage.getItem('accessToken') || ""
 
     // get book ID
     const searchParams = useSearchParams()
     const bookId = searchParams?.get('bookId')
+    const extension = searchParams?.get('extension');
 
     // get book url
     const [location, setLocation] = useState<string | number>(0)
@@ -22,7 +23,7 @@ export default function ReaderPage() {
         const fetchBook = async () => {
             try {
                 setIsLoading(true)
-                const response = await fetch(`/api/libre-book/geturl/${bookId}`, {
+                const response = await fetch(`http://localhost:port/books/download/?bookId=${bookId}&extension=${extension}`, {
                     headers: {
                         'Authorization': `Bearer ${token}` // 替换为实际的访问令牌
                     }
@@ -43,19 +44,27 @@ export default function ReaderPage() {
         if (bookId) {
             fetchBook()
         }
-    }, [bookId])
+    }, [bookId, extension, token])
 
-    if (isLoading) return <div>Loading...</div>
-    if (error) console.log("book fetch error")
+    if (isLoading) return <div className="flex justify-center items-center min-h-screen">Loading...</div>
 
+    if (error) return <div className="flex justify-center items-center min-h-screen">Error: {error}</div>
 
+    //console.log(extension)
     return (
         <div style={{ height: '100vh' }}>
-            <ReactReader
-                url="https://react-reader.metabits.no/files/alice.epub"
-                location={location}
-                locationChanged={(epubcfi: string) => setLocation(epubcfi)}
-            />
+            {extension === 'pdf' ? (
+                //test 
+                // window.location.href = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+                window.location.href = bookUrl
+            ) : (
+                <ReactReader
+                    url={bookUrl}
+                    location={location}
+                    locationChanged={(epubcfi: string) => setLocation(epubcfi)}
+                />
+            )}
         </div>
     )
+
 }

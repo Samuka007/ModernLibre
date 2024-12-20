@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button"
 import { Download, Star, ArrowLeft, Eye } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 
 export default function BookPage() {
   const params = useParams()
+  const searchParams = useSearchParams()
   const bookId = parseInt(params.bookId as string)
+  const extension = searchParams?.get('extension')
   const { book, loading, error } = useBook(bookId)
 
   if (loading) {
@@ -66,7 +68,7 @@ export default function BookPage() {
             )}
             <div className="w-[50%] pt-4 flex flex-col space-y-2">
               <div className="w-full">
-                <Link href={`/reader?bookId=${bookId}`} className="block w-full">
+                <Link href={`/reader?extension=${extension}&bookId=${bookId}`} className="block w-full">
                   <Button className="w-full">
                     <Eye className="mr-2 h-4 w-4" />
                     Read Online
