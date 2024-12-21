@@ -15,7 +15,7 @@ interface BookCardProps {
 function BookCard({ book }: BookCardProps) {
   return (
     <Card className="overflow-hidden">
-      <Link href={`/library/${book.id}?extension=${book.extension}`}>
+      <Link href={`/library/${book.id}`}>
         <CardContent className="p-0">
           <div className="aspect-[2/3] relative group">
             <Image

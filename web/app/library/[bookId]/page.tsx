@@ -2,18 +2,19 @@
 
 import { useBook } from '@/hooks/use-book'
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Download, Star, ArrowLeft, Eye } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { useUrl } from '@/hooks/use-url'
+import React from 'react'
 
 export default function BookPage() {
   const params = useParams()
-  const searchParams = useSearchParams()
   const bookId = parseInt(params.bookId as string)
-  const extension = searchParams?.get('extension')
   const { book, loading, error } = useBook(bookId)
+  const { url, uerror } = book ? useUrl(bookId, book.extension as string) : { url: null, uerror: null }
 
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>
@@ -25,6 +26,22 @@ export default function BookPage() {
 
   if (!book) {
     return <div className="flex justify-center items-center min-h-screen">Book not found</div>
+  }
+
+  // url 获取失败的情况下阻止跳转
+
+  const handlePreviewClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    if (uerror) {
+      e.preventDefault()
+      alert('URL 获取失败，无法在线预览');
+    }
+  }
+
+  const handleDownloadClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    if (uerror) {
+      e.preventDefault()
+      alert('URL 获取失败，无法下载');
+    }
   }
 
   return (
@@ -67,19 +84,21 @@ export default function BookPage() {
               </div>
             )}
             <div className="w-[50%] pt-4 flex flex-col space-y-2">
-              <div className="w-full">
-                <Link href={`/reader?extension=${extension}&bookId=${bookId}`} className="block w-full">
+              <div className='w-full'>
+                <Link href={`/reader?url=${url}&extension=${book.extension}`} onClick={handlePreviewClick} className="w-full block">
                   <Button className="w-full">
                     <Eye className="mr-2 h-4 w-4" />
                     Read Online
                   </Button>
                 </Link>
               </div>
-              <div className="w-full">
-                <Button className="w-full">
-                  <Download className="mr-2 h-4 w-4" />
-                  Download Book
-                </Button>
+              <div className='w-full'>
+                <Link href={`${url}`} download={`${book.title}.${book.extension}`} onClick={handleDownloadClick} className="w-full block">
+                  <Button className="w-full">
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Book
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
