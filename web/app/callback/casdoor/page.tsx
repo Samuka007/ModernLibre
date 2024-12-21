@@ -3,7 +3,7 @@
 import { useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath } from 'next/cache';
 
 function CallbackContent() {
     const router = useRouter();
@@ -12,10 +12,10 @@ function CallbackContent() {
     const state = searchParams.get('state');
 
     useEffect(() => {
-        if (code) {
+        if (code && state) {
             const fetchData = async () => {
                 try {
-                    const authUrl = `${process.env.NEXT_PUBLIC_LIBRE_BACKEND_URL}/oauth/github/callback?code=${code}&state=${state}`;
+                    const authUrl = `${window.location.origin}/api/oauth/casdoor/callback?code=${code}&state=${state}`;
                     const response = await fetch(authUrl, {
                         method: 'GET',
                         headers: {
@@ -35,9 +35,11 @@ function CallbackContent() {
                     localStorage.setItem('accessToken', token);
                     localStorage.setItem('user', JSON.stringify(user));
 
-                    revalidatePath('/');
+                    router.refresh();
                     router.push('/');
+                    revalidatePath('/');
                 } catch (error) {
+                    console.error(error);
                     toast.error('Authentication failed');
                 }
             };
@@ -53,4 +55,10 @@ function CallbackContent() {
     );
 }
 
-export default CallbackContent;
+export default function Page() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <CallbackContent />
+        </Suspense>
+    );
+}

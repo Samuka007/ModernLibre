@@ -2,6 +2,9 @@
 
 FROM node:18-alpine AS base
 
+# ENV NEXT_PUBLIC_LIBRE_USER_BACKEND_URL=http://172.24.4.176:8085
+# ENV NEXT_PUBLIC_LIBRE_BOOK_BACKEND_URL=http://172.24.4.176:8083
+
 # Install dependencies only when needed
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.

@@ -1,6 +1,6 @@
 use actix_web::{web, App, HttpServer};
 use libre_core::{
-    database::{self, postgres},
+    database::{self},
     jsonwebtoken,
 };
 use libre_user::{controller, oauth};
@@ -37,6 +37,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(postgres_app_data.clone())
             .configure(database::redis::init)
             .configure(jsonwebtoken::init_encoder)
+            .configure(jsonwebtoken::init_decoder)
             .configure(oauth::init)
             .configure(controller::init_routes)
     })
