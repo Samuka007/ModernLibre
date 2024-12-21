@@ -1,12 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import { useAuth } from '@/components/auth-provider'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Library, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
@@ -15,6 +11,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background relative">
+      {/* Back Button */}
       <Link
         href="/library"
         className="absolute top-4 left-4 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
@@ -22,6 +19,8 @@ export default function LoginPage() {
         <ArrowLeft className="h-4 w-4" />
         Back
       </Link>
+
+      {/* Login Card */}
       <Card className="w-[400px]">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-2">

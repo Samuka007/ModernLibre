@@ -3,6 +3,7 @@
 import { useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
+import { revalidatePath } from 'next/cache';
 
 function CallbackContent() {
     const router = useRouter();
@@ -36,6 +37,7 @@ function CallbackContent() {
 
                     router.refresh();
                     router.push('/');
+                    revalidatePath('/');
                 } catch (error) {
                     console.error(error);
                     toast.error('Authentication failed');
