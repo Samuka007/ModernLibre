@@ -29,7 +29,6 @@ export default function BookPage() {
   }
 
   // url 获取失败的情况下阻止跳转
-
   const handlePreviewClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     if (uerror) {
       e.preventDefault()
